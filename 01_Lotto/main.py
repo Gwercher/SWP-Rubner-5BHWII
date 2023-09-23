@@ -14,16 +14,12 @@ def gamble(n):
 
     res = {}
     for i in range(n):
-        index = random.randint(0, max - 1)
+        index = random.randint(0, max - 1 - i)
 
         old = num[index]
         new = num[max - 1 - i]
         num[index], num[max - 1 - i] = new, old
-
-    j = 0
-    for i in range(max - n, max):
-        res[j] = num[i]
-        j += 1
+        res[n-i-1] = old
 
     return res
 
