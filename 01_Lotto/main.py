@@ -2,28 +2,35 @@ import random
 
 
 def gamble(n):
+    if n <= 0:
+        print("number must be positive")
+        return
+
     max = 45
     num = []
-    res = {}
+
     for i in range(max):
         num.append(i)
 
+    res = {}
     for i in range(n):
-        print("i=" + str(i))
-        print("num=" + str(num))
-        print("res=" + str(res))
-        x = random.randint(0, max - 1)
-        print("x="+str(x))
-        res[i] = num[x]
+        index = random.randint(0, max - 1)
 
-        num[i], num[max - 1 - i] = num[max - 1 - i], num[i] # logic error here!!!
-        # print(x)
-        # print(num[x])
-        print()
+        old = num[index]
+        new = num[max - 1 - i]
+        num[index], num[max - 1 - i] = new, old
+
+    j = 0
+    for i in range(max - n, max):
+        res[j] = num[i]
+        j += 1
 
     return res
 
 
 res = {}
 res = gamble(6)
-print(res)
+
+if res.__sizeof__() >= 0:
+    for i in range(len(res)):
+        print(f"{i}: {res.get(i)}")
