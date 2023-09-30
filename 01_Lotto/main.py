@@ -1,6 +1,8 @@
 import random
-import pandas as pd
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
+import numpy as np
+
+
 def gamble(n, res):
     if n <= 0:
         print("number must be positive")
@@ -32,39 +34,16 @@ dic = {}
 for x in range(45):
     dic[x] = 0
 
-tries = 100
-
+tries = 1000
 for n in range(tries):
     res = []
     gamble(6, res)
     statistic(res, dic)
 
-height = []
-for i in range(len(dic)):
-    print(f"{i}: {dic.get(i)}")
-    height.append(dic.get(i))
-
-x_coords = []
-tick_label = []
-for x in range(45):
-    x_coords.append(x)
-    tick_label.append(x)
-
-left = []
-for x in range(45):
-    left.append(x)
-
-# plotting a bar chart
-plt.bar(left, height, tick_label=tick_label,
-        width=0.5, color=['red', 'green'])
-
-# naming the x-axis
-plt.xlabel('count')
-# naming the y-axis
-plt.ylabel('numbers')
-
-fig = plt.figure(figsize =(300, 300))
-
+plt.bar(dic.keys(), dic.values())
+plt.title("lottery numbers, n=" + str(tries))
+plt.xlabel("numbers")
+plt.ylabel("occurrence")
 plt.show()
 
 # https://www.w3schools.com/python/matplotlib_bars.asp
