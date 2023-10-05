@@ -34,7 +34,7 @@ dic = {}
 for x in range(45):
     dic[x] = 0
 
-tries = 1000
+tries = 1000000
 for n in range(tries):
     res = []
     gamble(6, res)
