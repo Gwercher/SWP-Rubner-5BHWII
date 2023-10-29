@@ -82,15 +82,6 @@ card	|	color 	|	value	|   card name
 50		|	3		|	11		|   SPADE QUEEN
 51		|	3		|	12		|   SPADE KING
 
--01  ROYAL FLUSH                 höchstmögliche Strasse in derselben Farbe (10-J-Q-K-A)
--02  STRAIGHT FLUSH              fünf aufeinanderfolgende Karten gleicher Farbe
--03  FOUR OF A KIND/VIERLING     vier karten gleichen Werts
-04  FULL HOUSE                  ein Paar und ein Drilling
--05  FLUSH                       fünf Karten gleicher Farbe
--06  STRAIGHT/STRASSE            fünf aufeinanderfolgenden Karten
--07  THREE OF A KIND/DRILLING    drei Karten gleichen Werts
-08  TWO PAIR/ZWEI PAARE         ----
--09  PAIR/PAAR                   zwei Karten gleichen Rangs
 10  HIGH CARD                   die höchste einzelne Karte
 
 TODO: test if range(1,5) or range(1,6)
@@ -98,6 +89,32 @@ TODO: combine certains methods, like straight_flush() and straight(), or four_of
 
 """
 import random
+from collections import Counter
+import matplotlib.pyplot as plt
+import numpy as np
+
+"""
+def pair_three_of_a_kind_four_of_a_kind(list):
+    mods = []
+    for i in range(1, 6):
+        mods.append(list[i - 1] % 13)
+    mods.sort()
+    occ = Counter(mods)
+    # print(mods)
+    # print(occ.most_common())
+    # print(type(occ.most_common()[0][1]))
+
+    if occ.most_common()[0][1] == 2:
+        statistics['pair'] += 1
+        return True
+    elif occ.most_common()[0][1] == 3:
+        statistics['three_of_a_kind'] += 1
+        return True
+    elif occ.most_common()[0][1] == 4:
+        statistics['four_of_a_kind'] += 1
+        return True
+    return False
+"""
 
 
 def royal_flush(list):
@@ -107,23 +124,27 @@ def royal_flush(list):
     for i in range(1, 5):
         # check for same colors
         if list[i - 1] // 13 != list[i] // 13:
-            return
+            return False
 
         # check for royal flush values
-        if list[i - 1] != royal_flush_values[i - 1]:
-            return
+        if list[i - 1] % 13 != royal_flush_values[i - 1]:
+            return False
 
     statistics['royal_flush'] += 1
+    return True
 
 
 def straight(list):
-    list.sort()
-    for i in range(1, 5):
-        # check for ascending values
-        if list[i - 1] + 1 != list[i]:
-            return
+    mods = []
+    for i in range(0, 5):
+        mods.append(list[i] % 13)
+    mods.sort()
 
+    for i in range(1, 5):
+        if mods[i - 1] + 1 != mods[i]:
+            return False
     statistics['straight'] += 1
+    return True
 
 
 def straight_flush(list):
@@ -131,22 +152,24 @@ def straight_flush(list):
     for i in range(1, 5):
         # check for same colors
         if list[i - 1] // 13 != list[i] // 13:
-            return
+            return False
 
         # check for ascending values
         if list[i - 1] + 1 != list[i]:
-            return
+            return False
 
     statistics['straight_flush'] += 1
+    return True
 
 
 def flush(list):
     for i in range(1, 5):
         # check for same colors
         if list[i - 1] // 13 != list[i] // 13:
-            return
+            return False
 
     statistics['flush'] += 1
+    return True
 
 
 def four_of_a_kind(list):
@@ -154,13 +177,12 @@ def four_of_a_kind(list):
     for i in range(1, 6):
         mods.append(list[i - 1] % 13)
     mods.sort()
+    occ = Counter(mods)
 
-    c = 1
-    for i in range(1, 5):
-        if mods[i - 1] == mods[i]:
-            c += 1
-    if c == 4:
+    if occ.most_common()[0][1] == 4:
         statistics['four_of_a_kind'] += 1
+        return True
+    return False
 
 
 def three_of_a_kind(list):
@@ -168,19 +190,12 @@ def three_of_a_kind(list):
     for i in range(1, 6):
         mods.append(list[i - 1] % 13)
     mods.sort()
-    print(mods)
-    c = 1
-    c2 = 1
-    for i in range(1, 5):
-        print(mods[i])
-        #if mods[i - 1] == mods[i]:
-        if mods[0] == mods[i]:
-            c += 1
-        if mods[4] == mods[i]:
-            c2 += 1
-    print(c)
-    if c == 3 or c2 == 3:
+    occ = Counter(mods)
+
+    if occ.most_common()[0][1] == 3:
         statistics['three_of_a_kind'] += 1
+        return True
+    return False
 
 
 def pair(list):
@@ -188,14 +203,28 @@ def pair(list):
     for i in range(1, 6):
         mods.append(list[i - 1] % 13)
     mods.sort()
+    occ = Counter(mods)
+    # print(mods)
+    # print(occ.most_common())
+    # print(type(occ.most_common()[0][1]))
 
-    c = 1
-    for i in range(1, 5):
-        # if mods[i - 1] == mods[i]:
-        if mods[0] == mods[i]:
-            c += 1
-    if c == 2:
+    if occ.most_common()[0][1] == 2:
         statistics['pair'] += 1
+        return True
+    return False
+
+
+def two_pair(list):
+    mods = []
+    for i in range(1, 6):
+        mods.append(list[i - 1] % 13)
+    mods.sort()
+    occ = Counter(mods)
+
+    if occ.most_common()[0][1] == 2 and occ.most_common()[1][1] == 2:
+        statistics['two_pair'] += 1
+        return True
+    return False
 
 
 def full_house(list):
@@ -203,8 +232,16 @@ def full_house(list):
     for i in range(1, 6):
         mods.append(list[i - 1] % 13)
     mods.sort()
+    occ = Counter(mods)
 
-    print(mods)
+    if occ.most_common()[0][1] == 3 and occ.most_common()[1][1] == 2:
+        statistics['full_house'] += 1
+        return True
+    return False
+
+
+def high_card():
+    statistics['high_card'] += 1
 
 
 statistics = {
@@ -219,7 +256,7 @@ statistics = {
     'pair': 0,
     'high_card': 0,
 }
-"""
+
 cards = []
 cards_amount = 52
 
@@ -227,15 +264,68 @@ for i in range(cards_amount):
     cards.append(i)
 
 pull_cards_amount = 5
-current_pair = []
-for i in range(pull_cards_amount):
-    r = random.randint(0, cards_amount - 1)
+tries = 100000
+# tries = 1
 
-    current_pair.append(r)
-#current_pair.sort()
 
-print(current_pair)
+for i in range(tries):
+    # current_pair = []
+
+    # print(f"card\t|\tcolor\t|\tvalue")
+
+    current_pair = random.sample(range(0, cards_amount), 5)
+    # current_pair = [11,12,13,14,15]
+    """
+    straight is way off? 0% wtf
+    """
+    # for i in range(len(current_pair)):
+    # print(f"{current_pair[i]}\t\t|\t{current_pair[i] // 13}\t\t|\t{current_pair[i] % 13}")
+
+    if not royal_flush(current_pair):
+        if not straight_flush(current_pair):
+            if not four_of_a_kind(current_pair):
+                if not full_house(current_pair):
+                    if not flush(current_pair):
+                        if not straight(current_pair):
+                            if not three_of_a_kind(current_pair):
+                                if not two_pair(current_pair):
+                                    if not pair(current_pair):
+                                        high_card()
+# print()
+# print(statistics)
+# print(sum(statistics.values()))
 """
+print("\n\n")
+for i in statistics:
+    print(f"{i}\t\t|\t{str(statistics[i])}")
+    statistics[i] = statistics[i] / tries
+"""
+
+for i in statistics:
+    # print(f"{str(statistics[i])}\t\t|\t\t{i}")
+    statistics[i] = (statistics[i] / sum(statistics.values())) * 100
+    # print(f"{str(statistics[i])}\t\t|\t\t{i}")
+
+# https://en.wikipedia.org/wiki/Poker_probability#5-card_poker_hands
+
+wikipedia_x = [0.000154, 0.00139, 0.02401, 0.1441, 0.1965, 0.3925, 2.1128, 4.7539, 42.2569, 50.1177]
+plt.bar(statistics.keys(), wikipedia_x, color="red")
+plt.xticks(rotation=45)
+plt.title("Wikipedia")
+plt.show()
+
+plt.bar(statistics.keys(), statistics.values())
+plt.xticks(rotation=45)
+plt.show()
+
+print(f"Wikipedia %\t\t|\t\tGwercher %\t|\t\tCard Hand")
+print(f"----------------|-------------------|-----------------------")
+
+j = 0
+for i in statistics:
+    #print(f"{str(statistics[i])}\t\t|\t\t{i}\t\t|\t\t{wikipedia_x[j]}")
+    print(f"{round(wikipedia_x[j],4):.4f}\t\t\t|\t\t{round(statistics[i],4):.4f}\t\t|\t\t{i}")
+    j += 1
 """
 print(f"card\t|\tcolor \t|\tvalue\t|card name")
 test = []
@@ -243,10 +333,9 @@ for i in range(52):
     test.append(i)
     print(f"{i}\t\t|\t{i // 13}\t\t|\t{i % 13}\t\t|\t")
 """
-
-test = [0, 13, 27, 40, 1]
-# full_house(test)
-pair(test)
-three_of_a_kind(test)
+"""
+test = [2, 15, 25, 12, 51]
+full_house(test)
 
 print(statistics)
+"""
