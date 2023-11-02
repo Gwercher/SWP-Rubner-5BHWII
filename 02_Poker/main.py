@@ -1,103 +1,7 @@
-"""
-poker mit indexes, keine klassse!
-
-irgendwie mit module farbe oder symbol und dann auswerten oder so :3
-
-list 0 - 51
-5 karten ziehen
-20 // 13 = 1 (farbe)
-43 // 13 = 3 (andere farbe)
-20 % 13 = 7 (symbol 7)
-43 % 13 = 4 (symbol 4)
-
-paar vergleichen: karte 1 == gleich?, wenn ja (gleiche symbol oder farbe) return true (kombination methoden!)
-
-----------------------------------------------------------
-13 ... anzahl an symbolen, 1-10 + Jack + Queen + King
-4 ... unteschiedliche '''farben''' also symbole
-
-
-
-card	|	color 	|	value	|   card name
---------|-----------|-----------|-------------
-0		|	0		|	0		|   CLUB ACE
-1		|	0		|	1		|   CLUB 2
-2		|	0		|	2		|   CLUB 3
-3		|	0		|	3		|   CLUB 4
-4		|	0		|	4		|   CLUB 5
-5		|	0		|	5		|   CLUB 6
-6		|	0		|	6		|   CLUB 7
-7		|	0		|	7		|   CLUB 8
-8		|	0		|	8		|   CLUB 9
-9		|	0		|	9		|   CLUB 10
-10		|	0		|	10		|   CLUB JACK
-11		|	0		|	11		|   CLUB QUEEN
-12		|	0		|	12		|   CLUB KING
-
-card	|	color 	|	value	|   card name
---------|-----------|-----------|-------------
-13		|	1		|	0		|   DIAMOND ACE
-14		|	1		|	1		|   DIAMOND 2
-15		|	1		|	2		|   DIAMOND 3
-16		|	1		|	3		|   DIAMOND 4
-17		|	1		|	4		|   DIAMOND 5
-18		|	1		|	5		|   DIAMOND 6
-19		|	1		|	6		|   DIAMOND 7
-20		|	1		|	7		|   DIAMOND 8
-21		|	1		|	8		|   DIAMOND 9
-22		|	1		|	9		|   DIAMOND 10
-23		|	1		|	10		|   DIAMOND JACK
-24		|	1		|	11		|   DIAMOND QUEEN
-25		|	1		|	12		|   DIAMOND KING
-
-card	|	color 	|	value	|   card name
---------|-----------|-----------|-------------
-26		|	2		|	0		|   HEART ACE
-27		|	2		|	1		|   HEART 2
-28		|	2		|	2		|   HEART 3
-29		|	2		|	3		|   HEART 4
-30		|	2		|	4		|   HEART 5
-31		|	2		|	5		|   HEART 6
-32		|	2		|	6		|   HEART 7
-33		|	2		|	7		|   HEART 8
-34		|	2		|	8		|   HEART 9
-35		|	2		|	9		|   HEART 10
-36		|	2		|	10		|   HEART JACK
-37		|	2		|	11		|   HEART QUEEN
-38		|	2		|	12		|   HEART KING
-
-card	|	color 	|	value	|   card name
---------|-----------|-----------|-------------
-39		|	3		|	0		|   SPADE ACE
-40		|	3		|	1		|   SPADE 2
-41		|	3		|	2		|   SPADE 3
-42		|	3		|	3		|   SPADE 4
-43		|	3		|	4		|   SPADE 5
-44		|	3		|	5		|   SPADE 6
-45		|	3		|	6		|   SPADE 7
-46		|	3		|	7		|   SPADE 8
-47		|	3		|	8		|   SPADE 9
-48		|	3		|	9		|   SPADE 10
-49		|	3		|	10		|   SPADE JACK
-50		|	3		|	11		|   SPADE QUEEN
-51		|	3		|	12		|   SPADE KING
-
--01  ROYAL FLUSH                 höchstmögliche Strasse in derselben Farbe (10-J-Q-K-A)
--02  STRAIGHT FLUSH              fünf aufeinanderfolgende Karten gleicher Farbe
--03  FOUR OF A KIND/VIERLING     vier karten gleichen Werts
-04  FULL HOUSE                  ein Paar und ein Drilling
--05  FLUSH                       fünf Karten gleicher Farbe
--06  STRAIGHT/STRASSE            fünf aufeinanderfolgenden Karten
--07  THREE OF A KIND/DRILLING    drei Karten gleichen Werts
-08  TWO PAIR/ZWEI PAARE         ----
--09  PAIR/PAAR                   zwei Karten gleichen Rangs
-10  HIGH CARD                   die höchste einzelne Karte
-
-TODO: test if range(1,5) or range(1,6)
-TODO: combine certains methods, like straight_flush() and straight(), or four_of_a_kind() and three_of_a_kind()
-
-"""
 import random
+from collections import Counter
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def royal_flush(list):
@@ -107,23 +11,27 @@ def royal_flush(list):
     for i in range(1, 5):
         # check for same colors
         if list[i - 1] // 13 != list[i] // 13:
-            return
+            return False
 
         # check for royal flush values
-        if list[i - 1] != royal_flush_values[i - 1]:
-            return
+        if list[i - 1] % 13 != royal_flush_values[i - 1]:
+            return False
 
     statistics['royal_flush'] += 1
+    return True
 
 
 def straight(list):
-    list.sort()
-    for i in range(1, 5):
-        # check for ascending values
-        if list[i - 1] + 1 != list[i]:
-            return
+    mods = []
+    for i in range(0, 5):
+        mods.append(list[i] % 13)
+    mods.sort()
 
+    for i in range(1, 5):
+        if mods[i - 1] + 1 != mods[i]:
+            return False
     statistics['straight'] += 1
+    return True
 
 
 def straight_flush(list):
@@ -131,22 +39,24 @@ def straight_flush(list):
     for i in range(1, 5):
         # check for same colors
         if list[i - 1] // 13 != list[i] // 13:
-            return
+            return False
 
         # check for ascending values
         if list[i - 1] + 1 != list[i]:
-            return
+            return False
 
     statistics['straight_flush'] += 1
+    return True
 
 
 def flush(list):
     for i in range(1, 5):
         # check for same colors
         if list[i - 1] // 13 != list[i] // 13:
-            return
+            return False
 
     statistics['flush'] += 1
+    return True
 
 
 def four_of_a_kind(list):
@@ -154,13 +64,12 @@ def four_of_a_kind(list):
     for i in range(1, 6):
         mods.append(list[i - 1] % 13)
     mods.sort()
+    occ = Counter(mods)
 
-    c = 1
-    for i in range(1, 5):
-        if mods[i - 1] == mods[i]:
-            c += 1
-    if c == 4:
+    if occ.most_common()[0][1] == 4:
         statistics['four_of_a_kind'] += 1
+        return True
+    return False
 
 
 def three_of_a_kind(list):
@@ -168,19 +77,12 @@ def three_of_a_kind(list):
     for i in range(1, 6):
         mods.append(list[i - 1] % 13)
     mods.sort()
-    print(mods)
-    c = 1
-    c2 = 1
-    for i in range(1, 5):
-        print(mods[i])
-        #if mods[i - 1] == mods[i]:
-        if mods[0] == mods[i]:
-            c += 1
-        if mods[4] == mods[i]:
-            c2 += 1
-    print(c)
-    if c == 3 or c2 == 3:
+    occ = Counter(mods)
+
+    if occ.most_common()[0][1] == 3:
         statistics['three_of_a_kind'] += 1
+        return True
+    return False
 
 
 def pair(list):
@@ -188,14 +90,25 @@ def pair(list):
     for i in range(1, 6):
         mods.append(list[i - 1] % 13)
     mods.sort()
+    occ = Counter(mods)
 
-    c = 1
-    for i in range(1, 5):
-        # if mods[i - 1] == mods[i]:
-        if mods[0] == mods[i]:
-            c += 1
-    if c == 2:
+    if occ.most_common()[0][1] == 2:
         statistics['pair'] += 1
+        return True
+    return False
+
+
+def two_pair(list):
+    mods = []
+    for i in range(1, 6):
+        mods.append(list[i - 1] % 13)
+    mods.sort()
+    occ = Counter(mods)
+
+    if occ.most_common()[0][1] == 2 and occ.most_common()[1][1] == 2:
+        statistics['two_pair'] += 1
+        return True
+    return False
 
 
 def full_house(list):
@@ -203,8 +116,16 @@ def full_house(list):
     for i in range(1, 6):
         mods.append(list[i - 1] % 13)
     mods.sort()
+    occ = Counter(mods)
 
-    print(mods)
+    if occ.most_common()[0][1] == 3 and occ.most_common()[1][1] == 2:
+        statistics['full_house'] += 1
+        return True
+    return False
+
+
+def high_card():
+    statistics['high_card'] += 1
 
 
 statistics = {
@@ -219,34 +140,48 @@ statistics = {
     'pair': 0,
     'high_card': 0,
 }
-"""
-cards = []
+
 cards_amount = 52
 
-for i in range(cards_amount):
-    cards.append(i)
-
 pull_cards_amount = 5
-current_pair = []
-for i in range(pull_cards_amount):
-    r = random.randint(0, cards_amount - 1)
+tries = 1000000
 
-    current_pair.append(r)
-#current_pair.sort()
+for i in range(tries):
+    current_pair = random.sample(range(0, cards_amount), pull_cards_amount)
 
-print(current_pair)
+    if not royal_flush(current_pair):
+        if not straight_flush(current_pair):
+            if not four_of_a_kind(current_pair):
+                if not full_house(current_pair):
+                    if not flush(current_pair):
+                        if not straight(current_pair):
+                            if not three_of_a_kind(current_pair):
+                                if not two_pair(current_pair):
+                                    if not pair(current_pair):
+                                        high_card()
+
+for i in statistics:
+    statistics[i] = (statistics[i] / tries) * 100
+
+# https://en.wikipedia.org/wiki/Poker_probability#5-card_poker_hands
+wikipedia_x = [0.000154, 0.00139, 0.02401, 0.1441, 0.1965, 0.3925, 2.1128, 4.7539, 42.2569, 50.1177]
+
+print(f"Wikipedia %\t\t\t|\t\tGwercher %\t\t|\t\tCard Hand")
+print(f"--------------------|-----------------------|-----------------------")
+
+j = 0
+for i in statistics:
+    print(f"{wikipedia_x[j]:.6f}\t\t\t|\t\t{statistics[i]:.6f}\t\t|\t\t{i}")
+    j += 1
+print(f"tries={tries}")
+
 """
-"""
-print(f"card\t|\tcolor \t|\tvalue\t|card name")
-test = []
-for i in range(52):
-    test.append(i)
-    print(f"{i}\t\t|\t{i // 13}\t\t|\t{i % 13}\t\t|\t")
-"""
+plt.bar(statistics.keys(), wikipedia_x, color="red")
+plt.xticks(rotation=45)
+plt.title("Wikipedia")
+plt.show()
 
-test = [0, 13, 27, 40, 1]
-# full_house(test)
-pair(test)
-three_of_a_kind(test)
-
-print(statistics)
+plt.bar(statistics.keys(), statistics.values())
+plt.xticks(rotation=45)
+plt.show()
+"""
