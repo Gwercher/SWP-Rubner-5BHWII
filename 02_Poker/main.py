@@ -191,4 +191,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-# TODO: unit testing, maybe change to oop
+# TODO: unit testing, map + lambda, + test if code quicker
