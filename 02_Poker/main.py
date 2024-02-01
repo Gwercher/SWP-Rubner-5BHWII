@@ -1,9 +1,22 @@
 import random
+import time
 from collections import Counter
 import matplotlib.pyplot as plt
 import numpy as np
 
 
+def timer(func):
+    def wrapper_timer(*args, **kwargs):
+        start_time = time.perf_counter()
+        value = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        diff = end_time - start_time
+        print(f"Finished {func.__name__} in {diff:.8f} secs")
+        return value
+
+    return wrapper_timer
+
+@timer
 def royal_flush(list, statistics):
     royal_flush_values = [0, 9, 10, 11, 12]
     list.sort()
@@ -20,7 +33,7 @@ def royal_flush(list, statistics):
     statistics['royal_flush'] += 1
     return True
 
-
+@timer
 def straight(list, statistics):
     mods = []
     for i in range(0, 5):
@@ -33,7 +46,7 @@ def straight(list, statistics):
     statistics['straight'] += 1
     return True
 
-
+@timer
 def straight_flush(list, statistics):
     list.sort()
     for i in range(1, 5):
@@ -48,7 +61,7 @@ def straight_flush(list, statistics):
     statistics['straight_flush'] += 1
     return True
 
-
+@timer
 def flush(list, statistics):
     for i in range(1, 5):
         # check for same colors
@@ -58,7 +71,7 @@ def flush(list, statistics):
     statistics['flush'] += 1
     return True
 
-
+@timer
 def four_of_a_kind(list, statistics):
     mods = []
     for i in range(1, 6):
@@ -71,7 +84,7 @@ def four_of_a_kind(list, statistics):
         return True
     return False
 
-
+@timer
 def three_of_a_kind(list, statistics):
     mods = []
     for i in range(1, 6):
@@ -84,7 +97,7 @@ def three_of_a_kind(list, statistics):
         return True
     return False
 
-
+@timer
 def pair(list, statistics):
     mods = []
     for i in range(1, 6):
@@ -97,7 +110,7 @@ def pair(list, statistics):
         return True
     return False
 
-
+@timer
 def two_pair(list, statistics):
     mods = []
     for i in range(1, 6):
@@ -110,7 +123,7 @@ def two_pair(list, statistics):
         return True
     return False
 
-
+@timer
 def full_house(list, statistics):
     mods = []
     for i in range(1, 6):
@@ -123,10 +136,10 @@ def full_house(list, statistics):
         return True
     return False
 
-
+@timer
 def high_card(statistics):
     statistics['high_card'] += 1
-
+    return True
 
 def main():
     statistics = {
@@ -145,7 +158,9 @@ def main():
     cards_amount = 52
 
     pull_cards_amount = 5
-    tries = 100000
+    tries = 1_000
+
+    print('BEGIN POKER \n')
 
     for i in range(tries):
         current_pair = random.sample(range(0, cards_amount), pull_cards_amount)
@@ -160,7 +175,8 @@ def main():
                                     if not two_pair(current_pair, statistics):
                                         if not pair(current_pair, statistics):
                                             high_card(statistics)
-
+        print('')
+    print('END POKER\n')
     for i in statistics:
         statistics[i] = (statistics[i] / tries) * 100
 
@@ -190,5 +206,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# TODO: unit testing, map + lambda, + test if code quicker

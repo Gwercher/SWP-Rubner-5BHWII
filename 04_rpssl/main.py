@@ -208,14 +208,14 @@ if __name__ == '__main__':
 
     # ------------------------------------------------------------------------------------------------- #
     # MAIN MENU
-    while (True):
+    while True:
         main_menu_option = main_menu_input()
 
         # ------------------------------------------------------------------------------------------------- #
         # RPSSL GAME
         if main_menu_option == 'RPSSL':
             continue_playing = True
-            while (continue_playing):
+            while continue_playing:
                 player_choice = convert_to_str(choose_player_input())
                 ai_choice = convert_to_str(random.randint(0, 4))
 
