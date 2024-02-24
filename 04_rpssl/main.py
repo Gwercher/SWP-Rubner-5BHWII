@@ -1,6 +1,6 @@
 import random
 import json
-
+import requests
 
 def choose_player_input():
     while (True):
@@ -201,8 +201,8 @@ def show_statistics(win, pl_s, ai_s):
         print(a + "..........." + str(ai_s[a]))
 
 
-if __name__ == '__main__':
-    # ------------------------------------------------------------------------------------------------- #
+def main():
+        # ------------------------------------------------------------------------------------------------- #
     # LOAD STATISTICS
     win_dict, player_symbol_dict, ai_symbol_dict = load_dictionaries()
 
@@ -230,9 +230,10 @@ if __name__ == '__main__':
 
                 continue_playing = ask_continue_playing()
 
-            save_stats(player_symbol_dict, 'player_symbol_dict')
-            save_stats(ai_symbol_dict, 'ai_symbol_dict')
-            save_stats(win_dict, 'win_dict')
+            # json saving deactivated for sqlite
+            # save_stats(player_symbol_dict, 'player_symbol_dict')
+            # save_stats(ai_symbol_dict, 'ai_symbol_dict')
+            # save_stats(win_dict, 'win_dict')
 
         # ------------------------------------------------------------------------------------------------- #
         # STATISTICS
@@ -242,7 +243,14 @@ if __name__ == '__main__':
         # ------------------------------------------------------------------------------------------------- #
         # QUIT
         if main_menu_option == 'quit':
+            url = 'http://127.0.0.1:5000/postPlayerChoice'
+            query = player_symbol_dict
+            res = requests.post(url, data=query)    
             break
 
     print("\n" + "=" * 25)
     print("END OF PROGRAMM")
+
+
+if __name__ == '__main__':
+    main()
