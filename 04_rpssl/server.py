@@ -8,15 +8,16 @@ cursor = connection.cursor()
 
 cursor.execute("CREATE TABLE IF NOT EXISTS player_choice (name TEXT, amount INTEGER)")
 
+
 @app.route('/postPlayerChoice', methods=['POST'])
-def post():    
+def post():
     cursor.execute('SELECT * FROM player_choice')
     rows = cursor.fetchall()
-    
+
     db_dict = {}
     for row in rows:
         db_dict[row[0].strip()] = row[1]
-        
+
     data = request.form
     for key in data:
         if key in db_dict.keys():
@@ -25,9 +26,11 @@ def post():
         else:
             sql = f"INSERT INTO player_choice (name, amount) VALUES('{key}', {data[key]})"
             cursor.execute(sql)
-                
+
         connection.commit()
+
     return request.form
+
 
 if __name__ == '__main__':
     app.run(debug=True)

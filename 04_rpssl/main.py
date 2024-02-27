@@ -2,6 +2,7 @@ import random
 import json
 import requests
 
+
 def choose_player_input():
     while (True):
         print("\n" + "-" * 25)
@@ -33,7 +34,7 @@ def convert_to_str(n):
         Paper.........4
     """
 
-    # wer python version < 3.10 hat, hat pech :(
+    # wer python version < 3.10 verwendet, hat pech :(
     match n:
         case 0:
             return 'rock'
@@ -202,7 +203,7 @@ def show_statistics(win, pl_s, ai_s):
 
 
 def main():
-        # ------------------------------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------------------------------- #
     # LOAD STATISTICS
     win_dict, player_symbol_dict, ai_symbol_dict = load_dictionaries()
 
@@ -245,7 +246,7 @@ def main():
         if main_menu_option == 'quit':
             url = 'http://127.0.0.1:5000/postPlayerChoice'
             query = player_symbol_dict
-            res = requests.post(url, data=query)    
+            requests.post(url, data=query)
             break
 
     print("\n" + "=" * 25)
