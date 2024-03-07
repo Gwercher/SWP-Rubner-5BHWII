@@ -1,3 +1,4 @@
+import functools
 import random
 import time
 from collections import Counter
@@ -6,6 +7,7 @@ import numpy as np
 
 
 def timer(func):
+    @functools.wraps(func)
     def wrapper_timer(*args, **kwargs):
         start_time = time.perf_counter()
         value = func(*args, **kwargs)
