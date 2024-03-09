@@ -1,3 +1,7 @@
+import random
+
+
+# https://www.geeksforgeeks.org/python-linked-list/
 class Node:
     def __init__(self, data):
         self.data = data
@@ -35,18 +39,67 @@ class LinkedList:
     def __str__(self):
         output_str = ''
         cur_node = self.head
+        index = 0
         while cur_node.next_node:
-            output_str += f'{cur_node.data}\n'
+            output_str += f'{index}: {cur_node.data}\n'
+            index += 1
             cur_node = cur_node.next_node
-        output_str += f'{cur_node.data}'
+        output_str += f'{index}: {cur_node.data}'
 
         return output_str
 
-if __name__ == '__main__':
-    linked_list = LinkedList(Node(1))
-    linked_list.insert_end(2)
-    linked_list.insert_end(3)
-    linked_list.insert_end(4)
-    linked_list.insert_begin(0)
+    def __len__(self):
+        if self.head is None:
+            return 0
 
-    print(linked_list)
+        length = 1
+        cur_node = self.head
+        while cur_node.next_node:
+            length += 1
+            cur_node = cur_node.next_node
+
+        return length
+
+    class Iterator:
+        # https://www.geeksforgeeks.org/implementing-iterator-pattern-of-a-single-linked-list/
+        def __init__(self, cur_node):
+            self.cur_node = cur_node
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            while self.cur_node:
+                data = self.cur_node.data
+                self.cur_node = self.cur_node.next_node
+                return data
+
+            raise StopIteration
+
+    def __iter__(self):
+        return self.Iterator(self.head)
+
+
+def main():
+    linked_list = LinkedList()
+
+    input_amount = 5
+    rand_min = 0
+    rand_max = 20
+
+    for i in range(input_amount):
+        linked_list.insert_end(random.randint(rand_min, rand_max))
+
+    for i in range(input_amount):
+        linked_list.insert_begin(random.randint(rand_min, rand_max))
+
+    print(f'{linked_list}')
+    print(f'{len(linked_list)=}')
+
+    print(f'#' * 30)
+    for i in linked_list:
+        print(i, end=" ")
+
+
+if __name__ == '__main__':
+    main()

@@ -19,7 +19,7 @@ def choose_player_input():
         except ValueError:
             print("incorrect input")
         else:
-            if ret_choice_player >= 0 and ret_choice_player <= 4:
+            if 0 <= ret_choice_player <= 4:
                 return ret_choice_player
             else:
                 print("incorrect input")
@@ -53,57 +53,13 @@ def convert_to_str(n):
 
 
 def compare(pl, ai):
-    if pl == 'scissors' and ai == 'paper':
-        return 'player'
-    elif ai == 'scissors' and pl == 'paper':
+    if pl == ai:
+        return 'draw'
+
+    if (pl + 2) % 5 == ai or (pl - 1) % 5 == ai:
         return 'ai'
 
-    elif pl == 'paper' and ai == 'rock':
-        return 'player'
-    elif ai == 'paper' and pl == 'rock':
-        return 'ai'
-
-    elif pl == 'rock' and ai == 'lizard':
-        return 'player'
-    elif ai == 'rock' and pl == 'lizard':
-        return 'ai'
-
-    elif pl == 'lizard' and ai == 'spock':
-        return 'player'
-    elif ai == 'lizard' and pl == 'spock':
-        return 'ai'
-
-    elif pl == 'spock' and ai == 'scissors':
-        return 'player'
-    elif ai == 'spock' and pl == 'scissors':
-        return 'ai'
-
-    elif pl == 'scissors' and ai == 'lizard':
-        return 'player'
-    elif ai == 'scissors' and pl == 'lizard':
-        return 'ai'
-
-    elif pl == 'lizard' and ai == 'paper':
-        return 'player'
-    elif ai == 'lizard' and pl == 'paper':
-        return 'ai'
-
-    elif pl == 'paper' and ai == 'spock':
-        return 'player'
-    elif ai == 'paper' and pl == 'spock':
-        return 'ai'
-
-    elif pl == 'spock' and ai == 'rock':
-        return 'player'
-    elif ai == 'spock' and pl == 'rock':
-        return 'ai'
-
-    elif pl == 'rock' and ai == 'scissors':
-        return 'player'
-    elif ai == 'rock' and pl == 'scissors':
-        return 'ai'
-
-    return 'draw'
+    return 'player'
 
 
 def ask_continue_playing():
@@ -159,7 +115,7 @@ def load_dictionaries():
 
 
 def main_menu_input():
-    while (True):
+    while True:
         print("\n" + "-" * 25)
         print("RPSSL.........0")
         print("Statistics....1")
@@ -183,8 +139,6 @@ def main_menu_input():
 
             else:
                 print("incorrect input")
-
-    return menu_select
 
 
 def show_statistics(win, pl_s, ai_s):
@@ -217,24 +171,22 @@ def main():
         if main_menu_option == 'RPSSL':
             continue_playing = True
             while continue_playing:
-                player_choice = convert_to_str(choose_player_input())
-                ai_choice = convert_to_str(random.randint(0, 4))
+                player_choice = choose_player_input()
+                ai_choice = random.randint(0, 4)
+
+                res = compare(player_choice, ai_choice)
+
+                player_choice = convert_to_str(player_choice)
+                ai_choice = convert_to_str(ai_choice)
 
                 player_symbol_dict[player_choice] = player_symbol_dict[player_choice] + 1
                 ai_symbol_dict[ai_choice] = ai_symbol_dict[ai_choice] + 1
-
-                res = compare(player_choice, ai_choice)
                 win_dict[res] = win_dict[res] + 1
 
                 print('\n' + player_choice + ' --- ' + ai_choice)
                 print(res + " wins!\n")
 
                 continue_playing = ask_continue_playing()
-
-            # json saving deactivated for sqlite
-            # save_stats(player_symbol_dict, 'player_symbol_dict')
-            # save_stats(ai_symbol_dict, 'ai_symbol_dict')
-            # save_stats(win_dict, 'win_dict')
 
         # ------------------------------------------------------------------------------------------------- #
         # STATISTICS
@@ -246,7 +198,18 @@ def main():
         if main_menu_option == 'quit':
             url = 'http://127.0.0.1:5000/postPlayerChoice'
             query = player_symbol_dict
-            requests.post(url, data=query)
+            try:
+                requests.post(url, data=query)
+            except requests.exceptions.ConnectionError as e:
+                print('Connection with server failed!\nSaving locally...')
+            else:
+                player_symbol_dict = dict.fromkeys(player_symbol_dict, 0)
+                ai_symbol_dict = dict.fromkeys(ai_symbol_dict, 0)
+                win_dict = dict.fromkeys(win_dict, 0)
+            finally:
+                save_stats(player_symbol_dict, 'player_symbol_dict')
+                save_stats(ai_symbol_dict, 'ai_symbol_dict')
+                save_stats(win_dict, 'win_dict')
             break
 
     print("\n" + "=" * 25)
